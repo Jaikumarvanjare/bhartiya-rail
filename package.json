@@ -1,0 +1,11 @@
+{
+  "name": "bharat-rail",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A modern Indian railway booking prototype with a Java backend and heritage-inspired web UI.",
+  "scripts": {
+    "build:backend": "cd backend && ./mvnw -q package -DskipTests",
+    "dev:backend": "cd backend && ./mvnw -q spring-boot:run",
+    "start": "cd backend && java -jar target/bharat-rail-0.1.0.jar"
+  }
+}

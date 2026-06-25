@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bharat Rail</title>
+    <meta
+      name="description"
+      content="A modern Indian railway booking prototype with train search, booking, live status, dining, dashboard, and railway history."
+    >
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Bharat Rail home">
+          <span class="brand-mark">BR</span>
+          <span class="brand-copy">
+            <strong>Bharat Rail</strong>
+            <small>Modern railway journeys</small>
+          </span>
+        </a>
+
+        <nav class="nav-tabs" aria-label="Primary">
+          <button class="nav-tab is-active" data-view-target="search" type="button">Search</button>
+          <button class="nav-tab" data-view-target="results" type="button">Trains</button>
+          <button class="nav-tab" data-view-target="booking" type="button">Booking</button>
+          <button class="nav-tab" data-view-target="live" type="button">Live</button>
+          <button class="nav-tab" data-view-target="dashboard" type="button">Dashboard</button>
+          <button class="nav-tab" data-view-target="dining" type="button">Dining</button>
+          <button class="nav-tab" data-view-target="history" type="button">History</button>
+        </nav>
+
+        <div class="trust-strip">
+          <span>mTLS ready</span>
+          <span>Idempotent booking</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="view is-active" id="view-search" aria-labelledby="search-title">
+          <div class="hero-layout">
+            <section class="journey-hero" aria-label="Featured Indian rail journey">
+              <img
+                src="https://commons.wikimedia.org/wiki/Special:FilePath/Maharajas%27_Express.jpg"
+                alt="Maharajas Express train at a station platform"
+              >
+              <div class="hero-shade"></div>
+              <div class="hero-content">
+                <p class="eyebrow">Bharat Rail booking prototype</p>
+                <h1 id="search-title">Find your next Indian rail journey</h1>
+                <p>
+                  Fast train search with cultural route notes, modern booking, live status,
+                  dining, loyalty, and Indian railway history.
+                </p>
+              </div>
+            </section>
+
+            <form class="search-panel" id="search-form">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Plan journey</p>
+                  <h2>Search trains</h2>
+                </div>
+                <span class="system-status" id="system-status">API checking</span>
+              </div>
+
+              <label>
+                From
+                <select id="from-station" name="from"></select>
+              </label>
+
+              <label>
+                To
+                <select id="to-station" name="to"></select>
+              </label>
+
+              <div class="field-grid">
+                <label>
+                  Date
+                  <input id="journey-date" name="date" type="date">
+                </label>
+                <label>
+                  Class
+                  <select id="travel-class" name="class">
+                    <option value="CC">Chair Car</option>
+                    <option value="EC">Executive Chair</option>
+                    <option value="3A">AC 3 Tier</option>
+                    <option value="2A">AC 2 Tier</option>
+                    <option value="SL">Sleeper</option>
+                  </select>
+                </label>
+              </div>
+
+              <label>
+                Quota
+                <select id="quota" name="quota">
+                  <option value="GN">General</option>
+                  <option value="TQ">Tatkal</option>
+                  <option value="LD">Ladies</option>
+                  <option value="SS">Senior Citizen</option>
+                </select>
+              </label>
+
+              <button class="primary-action" type="submit">Search available trains</button>
+            </form>
+          </div>
+
+          <section class="metrics-band" aria-label="Service highlights">
+            <article>
+              <strong>10</strong>
+              <span>Seeded train services</span>
+            </article>
+            <article>
+              <strong>12</strong>
+              <span>Major Indian stations</span>
+            </article>
+            <article>
+              <strong>8</strong>
+              <span>History milestones</span>
+            </article>
+            <article>
+              <strong>6</strong>
+              <span>Regional dining options</span>
+            </article>
+          </section>
+
+          <section class="culture-routes" aria-labelledby="culture-title">
+            <div class="section-heading">
+              <p class="eyebrow">Culture routes</p>
+              <h2 id="culture-title">Journeys with local memory</h2>
+            </div>
+            <div class="route-grid">
+              <article class="route-card">
+                <img
+                  src="https://commons.wikimedia.org/wiki/Special:FilePath/Chatrapati_Shivaji_Maharaj_terminus._Mumbai._Maharashtra.jpg"
+                  alt="Chhatrapati Shivaji Maharaj Terminus facade in Mumbai"
+                >
+                <div>
+                  <span>Western Coast</span>
+                  <h3>Maratha gateways and Gothic stations</h3>
+                  <p>Mumbai routes use CSMT architecture, port history, and coastal trade as visual inspiration.</p>
+                </div>
+              </article>
+              <article class="route-card">
+                <img
+                  src="https://commons.wikimedia.org/wiki/Special:FilePath/Partial_interior_view_of_the_heritage_section_and_local_trains_ticket_booking_office_of_Chhatrapati_Shivaji_Maharaj_Terminus%2C_Mumbai%2C_Maharashtra.jpg"
+                  alt="Heritage booking hall inside Chhatrapati Shivaji Maharaj Terminus"
+                >
+                <div>
+                  <span>Station heritage</span>
+                  <h3>Booking halls, arches, clocks, and craft</h3>
+                  <p>The interface uses restrained jaali patterns, station clocks, and ticket-office clarity.</p>
+                </div>
+              </article>
+              <article class="route-card">
+                <img
+                  src="https://commons.wikimedia.org/wiki/Special:FilePath/Maharajas%27_Express.jpg"
+                  alt="Luxury Indian train coach on a platform"
+                >
+                <div>
+                  <span>Premium journeys</span>
+                  <h3>Royal rail comfort, modern utility</h3>
+                  <p>Luxury rail cues appear as gold accents, calm spacing, and high-trust booking states.</p>
+                </div>
+              </article>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="view-results" aria-labelledby="results-title">
+          <div class="section-heading compact">
+            <p class="eyebrow">Available trains</p>
+            <h2 id="results-title">Matching services</h2>
+          </div>
+
+          <div class="tools-row">
+            <label class="search-inline">
+              Search
+              <input id="result-query" type="search" placeholder="Train, type, culture">
+            </label>
+            <label>
+              Train type
+              <select id="type-filter">
+                <option value="all">All</option>
+                <option value="Vande Bharat">Vande Bharat</option>
+                <option value="Rajdhani">Rajdhani</option>
+                <option value="Shatabdi">Shatabdi</option>
+                <option value="Superfast">Superfast</option>
+                <option value="Mail Express">Mail Express</option>
+              </select>
+            </label>
+            <label class="toggle-line">
+              <input id="available-only" type="checkbox">
+              Available only
+            </label>
+          </div>
+
+          <div class="train-grid" id="train-results"></div>
+        </section>
+
+        <section class="view" id="view-booking" aria-labelledby="booking-title">
+          <div class="section-heading compact">
+            <p class="eyebrow">Secure reservation</p>
+            <h2 id="booking-title">Booking details</h2>
+          </div>
+
+          <div class="booking-layout">
+            <section class="booking-main">
+              <div class="selected-train" id="selected-train"></div>
+
+              <div class="passenger-head">
+                <div>
+                  <p class="eyebrow">Passengers</p>
+                  <h3>Traveller manifest</h3>
+                </div>
+                <button class="secondary-action" id="add-passenger" type="button">Add passenger</button>
+              </div>
+
+              <div class="passenger-list" id="passenger-list"></div>
+            </section>
+
+            <aside class="fare-panel">
+              <p class="eyebrow">Fare summary</p>
+              <div id="fare-summary"></div>
+              <label>
+                Payment rail
+                <select id="payment-method">
+                  <option value="upi">UPI</option>
+                  <option value="card">Card</option>
+                  <option value="netbanking">Net banking</option>
+                  <option value="wallet">Wallet</option>
+                </select>
+              </label>
+              <button class="primary-action" id="confirm-booking" type="button">Confirm booking</button>
+              <div class="confirmation" id="booking-confirmation" aria-live="polite"></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="view-live" aria-labelledby="live-title">
+          <div class="section-heading compact">
+            <p class="eyebrow">Live status</p>
+            <h2 id="live-title">Train movement</h2>
+          </div>
+          <div class="live-layout">
+            <section class="live-board" id="live-board"></section>
+            <section class="track-panel">
+              <div class="track-line" id="track-line"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-dashboard" aria-labelledby="dashboard-title">
+          <div class="section-heading compact">
+            <p class="eyebrow">Yatri dashboard</p>
+            <h2 id="dashboard-title">Your rail account</h2>
+          </div>
+          <div class="dashboard-grid" id="dashboard-grid"></div>
+        </section>
+
+        <section class="view" id="view-dining" aria-labelledby="dining-title">
+          <div class="section-heading compact">
+            <p class="eyebrow">Regional meals</p>
+            <h2 id="dining-title">Dining on the journey</h2>
+          </div>
+          <div class="dining-grid" id="dining-grid"></div>
+        </section>
+
+        <section class="view" id="view-history" aria-labelledby="history-title">
+          <div class="history-hero">
+            <div>
+              <p class="eyebrow">Railway history</p>
+              <h2 id="history-title">From steam to semi-high-speed</h2>
+              <p id="history-summary"></p>
+            </div>
+          </div>
+          <div class="timeline" id="history-timeline"></div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>Bharat Rail prototype</span>
+        <span>Original brand, not affiliated with IRCTC or Indian Railways</span>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
