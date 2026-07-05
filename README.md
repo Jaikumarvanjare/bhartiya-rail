@@ -1,104 +1,201 @@
 # Bharat Rail
 
-Bharat Rail is an original, education-friendly railway booking prototype inspired by Indian railway journeys, station architecture, regional food, and cultural routes. It is not an official IRCTC product and does not claim affiliation with Indian Railways.
+Education-friendly Indian railway booking and travel-intelligence prototype. Heritage-first UI, production-style API design. **Not IRCTC. Not affiliated with Indian Railways.**
 
-The repo contains a working Java web server plus a modern browser UI. It includes train search, results, class/quota filters, passenger booking, fare calculation, confirmation, live-train style tracking, a user dashboard, dining options, heritage route cards, and an Indian railway history page.
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 19, Vite, React Router |
+| Backend | Node.js 22, Express 5 |
+| Database | PostgreSQL 16, Prisma |
+| Cache / queue | Redis 7, BullMQ |
 
-## Run Locally
+---
+
+## Quick start
+
+### Prerequisites
+
+- Node.js 22+
+- Docker (for Postgres + Redis)
+
+### Run
 
 ```bash
-npm run dev:backend
+docker compose up -d
+npm install
+cp server/.env.example server/.env   # add RAILRADAR_API_KEY for live schedules
+npm run db:setup
+npm run dev
 ```
 
-Then open:
+| Service | URL |
+|---------|-----|
+| Web app | http://localhost:5173 |
+| API | http://localhost:4000/api/v1/health |
+
+**Demo login:** `demo@bharatrail.in` / `demo1234`
+
+### Production build
+
+```bash
+npm run build          # client → client/dist
+npm run start -w server
+```
+
+---
+
+## Repository layout
 
 ```text
-http://localhost:8080
+bharat-rail/
+├── client/                 React SPA (Vite)
+├── server/                 Express API + Prisma
+│   ├── src/modules/        Domain modules (auth, catalog, bookings, …)
+│   ├── prisma/             Schema, seed, station index (711 stations)
+│   └── .env.example        Environment template
+├── docs/                   Architecture & full API spec
+├── docker-compose.yml      Postgres :5433, Redis :6380
+└── package.json            npm workspaces
 ```
 
-You can also build and run directly:
+---
 
-```bash
-cd backend
-./mvnw spring-boot:run
-```
+## Application routes (frontend)
 
-Or build a jar:
+| Path | Purpose |
+|------|---------|
+| `/` | Home — search, PNR, live train widget |
+| `/trains/between` | Between-stations search (from, to, date, class, quota) |
+| `/trains?from=&to=&date=&class=&quota=` | Results — all trains on selected date |
+| `/train/:number` | Train schedule (halt-wise timetable) |
+| `/train/:number/live` | Live running status & delay |
+| `/train/:number/route` | Route map & halt coordinates |
+| `/live` | Live train lookup by number |
+| `/station` | Station hub — pick station → board or live |
+| `/station/:code/board` | Station timetable |
+| `/station/:code/live` | Live arrival / departure board |
+| `/lookup/trains` | Train number → name directory |
+| `/lookup/stations` | Station code → name directory |
+| `/services` | Travel services hub |
+| `/services/archive` | Legacy / compatibility datasets |
+| `/booking` | Ticket booking flow |
+| `/pnr` | PNR status |
+| `/dashboard` | My trips |
+| `/dining` | Regional meal catalog |
+| `/heritage` | Cultural routes |
+| `/about` | Indian Railways — heritage & milestones (educational) |
 
-```bash
-cd backend
-./mvnw package -DskipTests
-java -jar target/bharat-rail-0.1.0.jar
-```
+---
 
-## Current Stack
+## API routes (backend)
 
-- Backend: Java 17, Spring Boot 3, Maven
-- Frontend: HTML, CSS, JavaScript
-- Data: seeded in-memory railway, dining, dashboard, live status, and history data
-- Assets: Wikimedia Commons hotlinked railway and station images
+Base URL: **`/api/v1`**
 
-This first version avoids external databases so it can run immediately in the current workspace. For production, replace the prototype server with the stack described in [docs/architecture.md](docs/architecture.md).
+### System & catalog
 
-## Features
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Liveness |
+| GET | `/system/version` | App version |
+| GET | `/classes` | Travel classes (SL, 3A, 2A, …) |
+| GET | `/quotas` | Quota codes (GN, TQ, PT, …) |
+| GET | `/stations?q=` | Search stations (711 seeded) |
+| GET | `/stations/:code` | Station detail |
+| GET | `/search/between/:from/:to` | **Primary search** — `?date=&class=&quota=` |
+| GET | `/search/trains` | Demo seed search (fallback) |
 
-- Modern search screen with from, to, date, class, and quota controls
-- Train results with filters, availability, fare, journey duration, and cultural route notes
-- Booking screen with passenger add/remove, fare summary, GST/reservation charges, and generated PNR
-- Dashboard with upcoming journey, reward points, live progress, and saved passengers
-- Live train tracking simulation
-- Dining screen with Indian regional meal options
-- Heritage routes inspired by forts, temple towns, ghats, river corridors, and coastal journeys
-- History page covering the railway story from 1853 to modern semi-high-speed services
-- API endpoints under `/api/*`
+### Train intelligence
 
-## API Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/trains/:number/details` | Full schedule |
+| GET | `/trains/:number/live` | Live status |
+| GET | `/live-status/:number` | Live status (alias) |
+| GET | `/trains/:number/route` | Route geometry (`?format=geojson&stops=true`) |
+| GET | `/trains/between/:from/:to` | Raw between-stations proxy |
 
-- `GET /health`
-- `GET /api/stations`
-- `GET /api/trains?from=NDLS&to=BSB&class=CC`
-- `GET /api/live?train=22436`
-- `GET /api/dashboard`
-- `GET /api/dining`
-- `GET /api/history`
-- `POST /api/bookings`
+### Station intelligence
 
-## Production Direction
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/stations/:code/trains` | Station timetable |
+| GET | `/stations/:code/live` | Live board (`?hours=4`) |
 
-For a real high-scale ticketing system, use this repo as the product/UI prototype, then move to:
+### Lookup & legacy
 
-- Java or C++ microservices behind Envoy
-- gRPC and Protocol Buffers between services
-- PostgreSQL or distributed SQL for booking transactions
-- Redis Cluster for sessions, seat snapshots, idempotency keys, and rate limits
-- Kafka or Redpanda for booking, notification, payment, and audit events
-- Kubernetes, Helm, Terraform, OpenTelemetry, Prometheus, Grafana, Loki, and Jaeger/Tempo
-- WAF, CDN, mTLS, OAuth2/OIDC, Vault/KMS, OWASP ASVS, SAST, DAST, and container scanning
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/lookup/trains` | Active train directory |
+| GET | `/lookup/stations` | Station directory |
+| GET | `/legacy/stations/all-kvs` | Legacy station index |
+| GET | `/legacy/trains/all-kvs` | Legacy train index |
+| GET | `/legacy/trains/between` | Legacy between search |
+| GET | `/legacy/modules/shipping/find-trains` | Shipping route finder |
+| GET | `/legacy/trains/:number` | Legacy train record |
 
-See [docs/architecture.md](docs/architecture.md) for the 500 million requests per minute design discussion.
+### Booking (live prototype)
 
-## Railway History Notes
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/login` | JWT login |
+| POST | `/bookings/initiate` | Start booking + seat lock |
+| POST | `/bookings/:id/passengers` | Add passengers |
+| POST | `/payments/create-order` | Mock payment order |
+| POST | `/payments/verify` | Verify payment |
+| POST | `/bookings/:id/confirm` | Confirm ticket |
+| GET | `/pnr/:pnrNumber` | PNR lookup |
 
-- India first passenger train ran on 16 April 1853 between Bombay and Thane.
-- It covered around 34 km with 14 carriages and about 400 passengers.
-- The train was hauled by the steam locomotives Sahib, Sindh, and Sultan.
-- The network expanded across western, eastern, southern, and northern India through the late 1800s.
-- Electric traction began in the Bombay region in 1925.
-- In 1951, many railway systems were consolidated into Indian Railways.
-- Modern Indian rail now includes electrification, dedicated freight work, metro systems, and semi-high-speed Vande Bharat services.
+Full specification (120+ endpoints, planned vs live): [`docs/api.md`](./docs/api.md)
 
-References used while preparing the history content:
+---
 
-- https://en.wikipedia.org/wiki/Indian_Railways
-- https://en.wikipedia.org/wiki/Thane_railway_station
-- https://en.wikipedia.org/wiki/Great_Indian_Peninsula_Railway
-- https://commons.wikimedia.org/wiki/File:Maharajas%27_Express.jpg
-- https://commons.wikimedia.org/wiki/File:Chatrapati_Shivaji_Maharaj_terminus._Mumbai._Maharashtra.jpg
+## Environment variables
 
-## AI Visual Prompt
+Copy `server/.env.example` → `server/.env`.
 
-Use this prompt if you want an image generator to create matching UI concept art:
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `DATABASE_URL` | Yes | PostgreSQL connection |
+| `REDIS_URL` | Yes | Seat locks, tatkal queue |
+| `JWT_ACCESS_SECRET` | Yes | Access token signing |
+| `JWT_REFRESH_SECRET` | Yes | Refresh token signing |
+| `RAILRADAR_API_KEY` | For live data | Real schedules, live status, boards |
+| `RAILRADAR_BASE_URL` | No | Schedule API base (default set in example) |
+| `CLIENT_ORIGIN` | No | CORS origin (default `http://localhost:5173`) |
+| `SEAT_LOCK_TTL_SECONDS` | No | Seat hold duration (default 900) |
+| `TATKAL_DAILY_LIMIT` | No | Tatkal bookings per user per day |
 
-```text
-Modern Indian railway booking web application, original Bharat Rail brand, premium travel utility interface, deep indigo navigation, saffron action buttons, temple gold highlights, ivory content surfaces, emerald availability states, subtle jaali lattice patterns, Indian station architecture, heritage routes, live train dashboard, clean data-dense cards, elegant serif display typography with modern sans-serif UI typography, realistic railway photography, professional Figma style dashboard, responsive desktop layout, high clarity, no official IRCTC branding
-```
+Without `RAILRADAR_API_KEY`, between-station search falls back to demo trains where the route exists in seed data.
+
+---
+
+## npm scripts
+
+| Command | Action |
+|---------|--------|
+| `npm run dev` | API + React dev servers |
+| `npm run dev:server` | API only |
+| `npm run dev:client` | UI only |
+| `npm run db:setup` | Prisma push + seed |
+| `npm run build` | Production client build |
+| `npm run verify:railradar -w server` | Smoke-test schedule API routes |
+
+---
+
+## Design
+
+Heritage UI tokens: deep indigo navigation, saffron CTAs, temple gold accents, ivory surfaces, emerald availability. Dark / light / system theme supported.
+
+---
+
+## Documentation
+
+- [Architecture](./docs/architecture.md)
+- [API specification](./docs/api.md)
+- [History sources](./docs/history-sources.md)
+
+---
+
+## Disclaimer
+
+Prototype for learning and demonstration. Not for commercial ticketing. Verify all timings and availability with official sources before travel.

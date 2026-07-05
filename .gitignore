@@ -1,9 +1,23 @@
-build/
-backend/target/
-.cache/
+# Dependencies & build
 node_modules/
+dist/
+build/
+client/dist/
+.cache/
+
+# Environment & secrets
+server/.env
+.env
+.env.local
+.env.*.local
+
+# OS & logs
 .DS_Store
 *.log
-*.out
-*.o
-compile_commands.json
+
+# Local agent / IDE tooling (not part of the product)
+.agents/
+.claude/
+.codex/
+AGENTS.md
+.github/workflows/

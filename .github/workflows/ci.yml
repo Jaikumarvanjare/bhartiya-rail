@@ -5,14 +5,35 @@ on:
   pull_request:
 
 jobs:
-  java-build:
+  build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: bharat
+          POSTGRES_PASSWORD: bharat
+          POSTGRES_DB: bharat_rail
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bharat -d bharat_rail"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://bharat:bharat@localhost:5432/bharat_rail?schema=public
+
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-node@v4
         with:
-          distribution: temurin
-          java-version: 17
-          cache: maven
-      - name: Build
-        run: cd backend && ./mvnw -B package -DskipTests
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Setup database
+        run: npm run db:setup -w server
+      - name: Build client
+        run: npm run build -w client

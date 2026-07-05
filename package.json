@@ -1,11 +1,21 @@
 {
   "name": "bharat-rail",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "A modern Indian railway booking prototype with a Java backend and heritage-inspired web UI.",
+  "description": "Indian railway booking prototype on the PERN stack.",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
-    "build:backend": "cd backend && ./mvnw -q package -DskipTests",
-    "dev:backend": "cd backend && ./mvnw -q spring-boot:run",
-    "start": "cd backend && java -jar target/bharat-rail-0.1.0.jar"
+    "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
+    "dev:server": "npm run dev -w server",
+    "dev:client": "npm run dev -w client",
+    "build": "npm run build -w client",
+    "db:setup": "npm run db:setup -w server",
+    "start": "npm run start -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
   }
 }

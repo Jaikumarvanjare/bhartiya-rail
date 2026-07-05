@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String           @id @default(cuid())
+  email         String           @unique
+  phone         String?
+  passwordHash  String
+  name          String
+  walletBalance Int              @default(0)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  refreshTokens RefreshToken[]
+  sessions      BookingSession[]
+  passengers    SavedPassenger[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  target    String
+  codeHash  String
+  purpose   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([target, purpose])
+}
+
+model Station {
+  code       String  @id
+  name       String
+  city       String
+  region     String
+  note       String
+  trainsFrom Train[] @relation("FromStation")
+  trainsTo   Train[] @relation("ToStation")
+}
+
+model Train {
+  number       String  @id
+  name         String
+  type         String
+  fromCode     String
+  fromName     String
+  toCode       String
+  toName       String
+  depart       String
+  arrive       String
+  duration     String
+  availability String
+  culture      String
+  fare         Int
+  seats        Int
+  rating       Float
+  fromStation  Station @relation("FromStation", fields: [fromCode], references: [code])
+  toStation    Station @relation("ToStation", fields: [toCode], references: [code])
+}
+
+model HistoryEvent {
+  id     Int    @id @default(autoincrement())
+  year   String
+  title  String
+  detail String
+  region String
+}
+
+model Meal {
+  id     Int    @id @default(autoincrement())
+  name   String
+  region String
+  type   String
+  price  Int
+  note   String
+}
+
+model BookingSession {
+  id             String             @id @default(cuid())
+  userId         String?
+  user           User?              @relation(fields: [userId], references: [id])
+  trainNumber    String
+  journeyDate    String
+  travelClass    String             @default("CC")
+  quota          String             @default("GN")
+  status         String             @default("initiated")
+  seatLockId     String?
+  coach          String?
+  berths         String[]
+  fareTotal      Int?
+  pnr            String?            @unique
+  idempotencyKey String?            @unique
+  isTatkal       Boolean            @default(false)
+  refundAmount   Int?
+  payload        Json?
+  expiresAt      DateTime
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  passengers     BookingPassenger[]
+  payment        Payment?
+
+  @@index([userId, status])
+  @@index([pnr])
+}
+
+model BookingPassenger {
+  id        String         @id @default(cuid())
+  sessionId String
+  session   BookingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  name      String
+  age       Int
+  gender    String
+  berthPref String?
+}
+
+model Payment {
+  id             String         @id @default(cuid())
+  sessionId      String         @unique
+  session        BookingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  orderId        String         @unique
+  amount         Int
+  status         String         @default("created")
+  gatewayRef     String?
+  idempotencyKey String?        @unique
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model SavedPassenger {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name   String
+  age    Int
+  gender String
+}
