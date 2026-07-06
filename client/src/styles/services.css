@@ -65,8 +65,14 @@
   gap: 14px;
 }
 
+.route-map { overflow: hidden; }
 .route-map svg { width: 100%; height: auto; display: block; }
+.route-map-canvas { width: 100%; height: 420px; min-height: 280px; border-radius: var(--radius); background: var(--surface-2); }
+.route-map--loading .route-map-canvas { opacity: 0.65; }
+.route-map-status { margin: 8px 0 0; font-size: 0.85rem; }
 .route-map-note { margin: 10px 0 0; font-size: 0.85rem; }
+.route-map-credit { opacity: 0.75; }
+.route-map-canvas .leaflet-control-attribution { display: none; }
 
 .code-block {
   overflow: auto;

@@ -28,7 +28,7 @@ export default function TrainRoutePage() {
 
   return (
     <section className="panel">
-      <PageHeader eyebrow="Route intelligence" title="Train route map" lead="Geographic route with halt markers." />
+      <PageHeader eyebrow="Route intelligence" title="Train route map" lead="Geographic train route on an interactive India map." />
 
       <form className="card service-form" onSubmit={(e) => { e.preventDefault(); load(input); }}>
         <label>Train number<input value={input} onChange={(e) => setInput(e.target.value)} placeholder="e.g. 12919" /></label>
