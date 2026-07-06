@@ -1,5 +1,5 @@
 import { getTrainsBetweenStations, railradarConfigured } from "../../lib/railradar.js";
-import { prisma } from "../../lib/prisma.js";
+import { loadSeedTrains } from "../../lib/db.js";
 import { filterTrains } from "../../data/constants.js";
 
 const FARE_PER_KM = { SL: 0.4, "3A": 1.2, "2A": 1.8, "1A": 3.5, CC: 1.0, EC: 1.4, "2S": 0.35 };
@@ -66,8 +66,11 @@ function mergeSeed(items, seeds) {
 }
 
 async function localFallback({ fromCode, toCode, fromName, toName, date, travelClass, quota, message }) {
-  const seeds = await prisma.train.findMany();
+  const { trains: seeds, offline: dbOffline } = await loadSeedTrains();
   const filtered = filterTrains(seeds, { from: fromCode, to: toCode, class: travelClass });
+  const dbNote = dbOffline
+    ? " Database is offline — start it with: docker compose up -d && npm run db:setup"
+    : "";
   return {
     from: fromCode,
     to: toCode,
@@ -79,7 +82,7 @@ async function localFallback({ fromCode, toCode, fromName, toName, date, travelC
     count: filtered.length,
     trains: filtered.map((t) => ({ ...t, bookable: true })),
     fallback: true,
-    message
+    message: `${message}${dbNote}`
   };
 }
 
@@ -120,7 +123,7 @@ export async function searchBetweenStations({ from, to, date, fromName, toName, 
   const mapped = (payload.trains || []).map((item) =>
     mapItem(item, { from: fromCode, to: toCode, fromName, toName, travelClass })
   );
-  const seeds = await prisma.train.findMany();
+  const { trains: seeds, offline: dbOffline } = await loadSeedTrains();
   const trains = mergeSeed(mapped, seeds);
 
   const result = {
@@ -132,7 +135,11 @@ export async function searchBetweenStations({ from, to, date, fromName, toName, 
     class: travelClass,
     quota: quota || "GN",
     count: trains.length,
-    trains
+    trains,
+    ...(dbOffline && {
+      fallback: true,
+      message: "Database is offline. Live schedule shown; booking uses demo trains. Run: docker compose up -d && npm run db:setup"
+    })
   };
 
   cache.set(cacheKey, { at: Date.now(), data: result });
