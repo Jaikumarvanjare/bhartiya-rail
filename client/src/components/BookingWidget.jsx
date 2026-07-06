@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext.jsx";
 import StationSelect from "./StationSelect.jsx";
@@ -15,15 +15,26 @@ function stationLabel(station) {
   return station ? `${station.name} (${station.code})` : "";
 }
 
-export default function BookingWidget() {
+const BookingWidget = forwardRef(function BookingWidget(_props, ref) {
   const navigate = useNavigate();
   const { setLastSearch, lastSearch } = useApp();
+  const widgetRef = useRef(null);
+  const fromInputRef = useRef(null);
   const [tab, setTab] = useState("book");
   const [date, setDate] = useState(lastSearch.date || defaultJourneyDate());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [pnr, setPnr] = useState("");
   const [liveTrain, setLiveTrain] = useState("22436");
+
+  useImperativeHandle(ref, () => ({
+    focusSearch() {
+      setTab("book");
+      setError("");
+      widgetRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      fromInputRef.current?.focus();
+    }
+  }));
 
   function handleSearch(event) {
     event.preventDefault();
@@ -64,7 +75,7 @@ export default function BookingWidget() {
   }
 
   return (
-    <div className="booking-widget card">
+    <div ref={widgetRef} id="booking-widget" className="booking-widget card">
       <div className="widget-tabs" role="tablist">
         {TABS.map(([id, label]) => (
           <button
@@ -86,6 +97,7 @@ export default function BookingWidget() {
             <StationSelect
               label="From"
               displayName={lastSearch.fromName}
+              inputRef={fromInputRef}
               onChange={(s) => setLastSearch((p) => ({ ...p, from: s?.code || "", fromName: stationLabel(s) }))}
             />
             <button type="button" className="icon-btn swap-btn" onClick={swapStations} aria-label="Swap">
@@ -145,4 +157,6 @@ export default function BookingWidget() {
       )}
     </div>
   );
-}
+});
+
+export default BookingWidget;

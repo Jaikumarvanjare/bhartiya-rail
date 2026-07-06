@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { HERO_IMAGE } from "../data/assets.js";
 import BookingWidget from "../components/BookingWidget.jsx";
 import QuickServices from "../components/QuickServices.jsx";
@@ -5,6 +6,12 @@ import PopularRoutes from "../components/PopularRoutes.jsx";
 import { FEATURED_TRAINS } from "../data/assets.js";
 
 export default function SearchPage() {
+  const bookingRef = useRef(null);
+
+  function focusBookingSearch() {
+    requestAnimationFrame(() => bookingRef.current?.focusSearch());
+  }
+
   return (
     <section className="panel home-panel">
       <div className="hero hero-home">
@@ -23,11 +30,11 @@ export default function SearchPage() {
               <li><strong>Live</strong> PNR &amp; tracking</li>
             </ul>
           </div>
-          <BookingWidget />
+          <BookingWidget ref={bookingRef} />
         </div>
       </div>
 
-      <PopularRoutes />
+      <PopularRoutes onSearch={focusBookingSearch} />
 
       <div>
         <header className="panel-head">

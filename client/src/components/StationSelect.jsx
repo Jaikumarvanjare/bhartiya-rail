@@ -5,7 +5,7 @@ function formatStation(station) {
   return `${station.name} (${station.code})`;
 }
 
-export default function StationSelect({ label, displayName, onChange }) {
+export default function StationSelect({ label, displayName, onChange, inputRef }) {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
   const [results, setResults] = useState([]);
@@ -13,8 +13,8 @@ export default function StationSelect({ label, displayName, onChange }) {
   const rootRef = useRef(null);
 
   useEffect(() => {
-    if (!open) setText(displayName || "");
-  }, [displayName, open]);
+    if (displayName) setText(displayName);
+  }, [displayName]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -72,6 +72,7 @@ export default function StationSelect({ label, displayName, onChange }) {
       <label>
         {label}
         <input
+          ref={inputRef}
           type="text"
           value={text}
           onChange={handleInputChange}
