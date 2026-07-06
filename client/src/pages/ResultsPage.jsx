@@ -97,11 +97,20 @@ export default function ResultsPage() {
   }
 
   if (error && !trains.length) {
+    const dbDown = /database|postgres|5433/i.test(error);
+    const quotaHit = /quota|429|busy|rate limit/i.test(error);
     return (
       <div className="empty-state">
         <h2 className="display">Could not load trains</h2>
         <p className="muted">{error}</p>
-        <p className="muted">If the schedule service quota is exhausted, try again later or contact the admin.</p>
+        {dbDown && (
+          <p className="muted">
+            Start the database: <code>docker compose up -d</code> then <code>npm run db:setup</code>
+          </p>
+        )}
+        {quotaHit && !dbDown && (
+          <p className="muted">Schedule service quota may be exhausted. Try again later or search another date.</p>
+        )}
         <Link to="/trains/between" className="primary-action inline-cta">Modify search</Link>
       </div>
     );

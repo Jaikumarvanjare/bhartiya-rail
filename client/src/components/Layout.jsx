@@ -19,9 +19,6 @@ export default function Layout({ children }) {
   return (
     <div className="app-shell">
       <div className="jaali-overlay" aria-hidden="true" />
-      <div className="alert-strip">
-        Bharat Rail prototype — education use only. Not IRCTC. Book smarter with instant PNR &amp; live tools.
-      </div>
       <header className="topbar">
         <NavLink className="brand" to="/">
           <span className="brand-mark"><IconTrain size={22} /></span>
