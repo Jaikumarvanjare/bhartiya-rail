@@ -38,15 +38,14 @@ const GROUPS = [
     title: "Booking & records",
     items: [
       { to: "/", title: "Book ticket", note: "Search and reserve" },
-      { to: "/pnr", title: "PNR status", note: "Booking confirmation" },
-      { to: "/services/archive", title: "Archive tools", note: "Compatibility datasets" }
+      { to: "/pnr", title: "PNR status", note: "Booking confirmation" }
     ]
   }
 ];
 
 export default function ServicesPage() {
   return (
-    <section className="panel">
+    <section className="panel services-page">
       <PageHeader
         eyebrow="Rail intelligence"
         title="Travel services"

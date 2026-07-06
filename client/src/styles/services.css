@@ -6,6 +6,32 @@
   flex-wrap: wrap;
 }
 
+.services-page {
+  width: 100%;
+  max-width: 920px;
+  margin-inline: auto;
+}
+
+.services-page .page-header {
+  justify-content: center;
+  text-align: center;
+}
+
+.services-page .service-group-title {
+  text-align: center;
+}
+
+.services-page .service-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.services-page .service-card {
+  flex: 1 1 220px;
+  max-width: 280px;
+}
+
 .service-grid {
   display: grid;
   gap: 14px;
