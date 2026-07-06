@@ -1,3 +1,19 @@
+import { Link } from "react-router-dom";
+
+const SERVICES = [
+  { to: "/", label: "Book" },
+  { to: "/pnr", label: "PNR" },
+  { to: "/live", label: "Live status" },
+  { to: "/about", label: "About railways" }
+];
+
+const TRUST = [
+  { to: "/booking", label: "Secure checkout" },
+  { to: "/pnr", label: "Idempotent PNR" },
+  { to: "/booking", label: "Seat lock TTL" },
+  { to: "/dashboard", label: "My trips" }
+];
+
 export default function Footer() {
   return (
     <footer className="site-footer">
@@ -8,14 +24,28 @@ export default function Footer() {
         </div>
         <div>
           <p className="eyebrow">Services</p>
-          <p className="muted">Book · PNR · Live status · <a href="/about">About railways</a> · Heritage</p>
+          <ul className="footer-links muted">
+            {SERVICES.map(({ to, label }) => (
+              <li key={to}>
+                <Link to={to}>{label}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
         <div>
           <p className="eyebrow">Trust</p>
-          <p className="muted">Secure checkout · Idempotent PNR · Seat lock TTL</p>
+          <ul className="footer-links muted">
+            {TRUST.map(({ to, label }) => (
+              <li key={label}>
+                <Link to={to}>{label}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
-      <p className="footer-note muted">Inspired by modern booking flows — designed for clarity, speed, and accessibility.</p>
+      <p className="footer-watermark" aria-hidden="true">
+        © {new Date().getFullYear()} Bharat Rail
+      </p>
     </footer>
   );
 }

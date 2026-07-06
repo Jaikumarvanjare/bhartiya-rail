@@ -590,7 +590,31 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 16px;
 }
 
-.footer-note { margin: 0; font-size: 0.85rem; }
+.footer-watermark {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.55;
+  user-select: none;
+}
+
+.footer-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.footer-links a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer-links a:hover { text-decoration: underline; }
 
 .card-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
